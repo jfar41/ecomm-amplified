@@ -1,0 +1,47 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type Post @model 
+    @auth(rules: [
+        { allow: owner },
+        { allow: public, operations: [read]}
+    ])
+{
+    id: ID!
+    title: String!
+    comments: [Comment] @connection(keyName: "postIdIndex", fields: ["id"])
+}
+
+type Comment @model
+# Migrated @key to @primaryKey + @index
+    @auth(rules: [
+        { allow: owner },
+        { allow: public, operations: [read]}
+    ])
+{
+    id: ID!
+    postId: ID! @primaryKey @index(name: "postIdIndex")
+    content: String!
+}
+
+type Product @model
+    @key(name: "productInventoryAmountIndex", fields: ["baseType", "inventory"], queryField: "productsByInventoryAmount")
+    @key(name: "productInventoryPriceIndex", fields: ["baseType", "price"], queryField: "productsByPrice")
+    @key(name: "productNameSearchIndex", fields: ["baseType", "name"], queryField: "productSearchByName")
+    @key(name: "productCategorySearchIndex", fields: ["baseType", "category"], queryField: "productSearchByCategory")
+    @key(name: "productCategoryIndex", fields: ["category", "createdAt"], queryField: "productsByCategory")
+    @key(name: "productByCategoryAndNameIndex", fields: ["category", "name"], queryField: "productsByCategoryAndName")
+    @key(name: "productByCategoryAndInventoryIndex", fields: ["category", "inventory"], queryField: "productsByCategoryAndInventory")
+    @key(name: "productByCategoryAndPriceIndex", fields: ["category", "price"], queryField: "productsByCategoryAndPrice")
+{
+    id: ID
+    name: String
+    price: Float
+    category: String
+    inventory: Int
+    createdAt: String
+    baseType: String
+}
+
+
