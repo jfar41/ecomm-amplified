@@ -8,9 +8,9 @@ type Post @model
         { allow: public, operations: [read]}
     ])
 {
-    id: ID!
+    id: ID! @primaryKey
     title: String!
-    comments: [Comment] @connection(keyName: "postIdIndex", fields: ["id"])
+    comments: [Comment] @hasMany(indexName: "postIdIndex", fields: ["id"])
 }
 
 type Comment @model
@@ -20,28 +20,28 @@ type Comment @model
         { allow: public, operations: [read]}
     ])
 {
-    id: ID!
-    postId: ID! @primaryKey @index(name: "postIdIndex")
+    id: ID! @primaryKey
+    postId: ID! @index(name: "postIdIndex")
     content: String!
 }
 
 type Product @model
-    @key(name: "productInventoryAmountIndex", fields: ["baseType", "inventory"], queryField: "productsByInventoryAmount")
-    @key(name: "productInventoryPriceIndex", fields: ["baseType", "price"], queryField: "productsByPrice")
-    @key(name: "productNameSearchIndex", fields: ["baseType", "name"], queryField: "productSearchByName")
-    @key(name: "productCategorySearchIndex", fields: ["baseType", "category"], queryField: "productSearchByCategory")
-    @key(name: "productCategoryIndex", fields: ["category", "createdAt"], queryField: "productsByCategory")
-    @key(name: "productByCategoryAndNameIndex", fields: ["category", "name"], queryField: "productsByCategoryAndName")
-    @key(name: "productByCategoryAndInventoryIndex", fields: ["category", "inventory"], queryField: "productsByCategoryAndInventory")
-    @key(name: "productByCategoryAndPriceIndex", fields: ["category", "price"], queryField: "productsByCategoryAndPrice")
 {
-    id: ID
+    id: ID! @primaryKey
     name: String
     price: Float
     category: String
+    @index(name: "productCategoryIndex", sortKeyFields: ["createdAt"], queryField: "productsByCategory")
+    @index(name: "productByCategoryAndNameIndex", sortKeyFields: ["name"], queryField: "productsByCategoryAndName")
+    @index(name: "productByCategoryAndInventoryIndex", sortKeyFields: ["inventory"], queryField: "productsByCategoryAndInventory")
+    @index(name: "productByCategoryAndPriceIndex", sortKeyFields: ["price"], queryField: "productsByCategoryAndPrice")
     inventory: Int
     createdAt: String
-    baseType: String
+    baseType: String 
+    @index(name: "productInventoryAmountIndex", sortKeyFields: ["inventory"], queryField: "productsByInventoryAmount")
+    @index(name: "productInventoryPriceIndex", sortKeyFields: ["price"], queryField: "productsByPrice")
+    @index(name: "productNameSearchIndex", sortKeyFields: ["name"], queryField: "productSearchByName")
+    @index(name: "productCategorySearchIndex", sortKeyFields: ["category"], queryField: "productSearchByCategory")
 }
 
 
